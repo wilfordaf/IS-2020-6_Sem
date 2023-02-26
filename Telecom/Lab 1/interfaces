@@ -1,0 +1,16 @@
+#enp0s3 configuration
+auto enp0s3
+iface enp0s3 inet manual
+bond-master bond007
+
+#enp0s8 configuration
+auto enp0s8
+iface enp0s8 inet manual
+bond-master bond007
+
+#bond007
+auto bond007
+iface bond007 inet dhcp
+bond-mode 0
+bond-miimon 100
+slaves enp0s3 enp0s8
