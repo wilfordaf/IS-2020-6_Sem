@@ -1,0 +1,49 @@
+<link rel="stylesheet" href="public/styles/profiletemplate.css">
+<main class="profile">
+    <div class="profile__body">
+        <div class="profile__content">
+            <div class="content__header" id="content_header"></div>
+        </div>
+    </div>
+</main>
+<script>
+    const contentHeader = document.getElementById("content_header");
+    const createProfileFormHTML = (user, nickname) => {
+        let buttonsHTML = ""
+
+        if (nickname === user.nickname) {
+            buttonsHTML += `<button class="content-header__button" onclick="editUser()">
+                        <img src="public/assets/misc/edit.png" alt="edit" class="content-header-button__picture">
+                        <div class="content-header-button__text">Edit</div>
+                        <div class="content-header-button__invisible"></div>
+                    </button>`
+        }
+
+        const imageSrc = user.pictureData ?? "/public/assets/misc/default_user.jpg";
+        const firstname = user.firstname ?? "";
+        const lastname = user.lastname ?? "";
+
+        return `<div class="content-header__metainformation">
+                    <img src="${imageSrc}" alt="user_avatar" class="content-header__picture">
+                    <div class="content-header__name">${user.nickname}</div>
+                    <div class="content-header__publication-time">${firstname} ${lastname}</div>
+                </div>
+                <div class="content-header__buttons">${buttonsHTML}</div>`
+    };
+
+    const params = new Proxy(new URLSearchParams(window.location.search), {
+        get: (searchParams, prop) => searchParams.get(prop),
+    });
+
+    const userId = Number(params.id);
+
+    function editUser() {
+        window.location = "/edit-user?id=" + userId;
+    }
+
+    axios.get('/current-auth').then((u) => {
+        axios.get(`/users/${userId}`).then(r => {
+            contentHeader.innerHTML = createProfileFormHTML(r.data, u.data.nickname);
+        })
+    })
+</script>

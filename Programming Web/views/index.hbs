@@ -1,0 +1,73 @@
+<link rel="stylesheet" href="public/styles/index.css">
+<main class="project">
+    <div class="project__body">
+        <div class="project__filter-bar">
+            <div class="filter-bar__body">
+                <div class="filter-bar__text">Filter by:</div>
+                <ul class="filter-bar__options"></ul>
+            </div>
+        </div>
+        <div class="project__row" id="project_table">
+            <div class="project__column">
+                <div class="project__item item">
+                    <a href="/add-tag">
+                        <img class="item__image" src="public/assets/projects/addnew.png" alt="new">
+                    </a>
+                    <div class="item__body">
+                        <div class="item__title">Add New Project</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<script src="public/scripts/expandToolsBubbles.js"></script>
+<script src="public/scripts/applyFilter.js"></script>
+<script>
+    const projectTable = document.getElementById("project_table");
+
+    const createProjectHTML = (project) => {
+        const imageSrc = project.pictureData ?? "/public/assets/misc/default_project.png"
+
+        let tags = "";
+        for (let i = 0; i < project.tags.length; i++) {
+            tags += `<li>${project.tags[i].name}</li>`
+        }
+
+        return `<div class="project__column">
+                <div class="project__item item">
+                    <a href=/project?id=${project.id}>
+                        <img class="item__image" src=${imageSrc} alt="project_image">
+                    </a>
+                    <div class="item__body">
+                        <div class="item__title">${project.name}</div>
+                        <ul class="item__tools-used">
+                            ${tags}
+                            <button type="button" class="item__expand-button"></button>
+                        </ul>
+                        <div class="item__text">${project.description}</div>
+                    </div>
+                </div>
+            </div>`;
+    };
+
+    axios.get('/projects').then(r => {
+        r.data.forEach(p => {
+            projectTable.insertAdjacentHTML("beforeend", createProjectHTML(p));
+        })
+
+        applyFilter();
+        expandToolBubbles();
+    })
+
+    const socket = io();
+    socket.on('connect', function() {
+        new Toast("Notifications enabled!");
+    });
+
+    socket.on('createProjectNotification', async function(data) {
+        new Toast(`Project ${data.projectName} added!`, Toast.TYPE_DONE);
+        await new Promise(r => setTimeout(r, 2000));
+        window.location.reload();
+    });
+</script>

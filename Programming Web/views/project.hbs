@@ -1,0 +1,138 @@
+<link rel="stylesheet" href="public/styles/projecttemplate.css">
+<main class="project">
+    <div class="project__body" id="project_form">
+    </div>
+</main>
+<script>
+
+    const projectForm = document.getElementById("project_form");
+
+    const createProjectFormHTML = (project, nickname) => {
+        let buttonsHTML = `<button class="content-header__button" onclick="location.replace('${project.repositoryLink}')">
+                        <img src="public/assets/misc/git.png" alt="git" class="content-header-button__picture">
+                        <div class="content-header-button__text">Open on Git</div>
+                        <div class="content-header-button__invisible"></div>
+                    </button>
+                    <button class="content-header__button" onclick="addNewTopicWithComment()">
+                        <img src="public/assets/misc/new.png" alt="new" class="content-header-button__picture">
+                        <div class="content-header-button__text">Start Topic</div>
+                        <div class="content-header-button__invisible"></div>
+                    </button>`
+
+        if (nickname === project.user.nickname) {
+            buttonsHTML += `<button class="content-header__button" onclick="editProject()">
+                    <img src="public/assets/misc/edit.png" alt="edit" class="content-header-button__picture">
+                    <div class="content-header-button__text">Edit</div>
+                    <div class="content-header-button__invisible"></div>
+                </button>
+                <button class="content-header__button" onclick="deleteProject()">
+                    <img src="public/assets/misc/delete.png" alt="delete" class="content-header-button__picture">
+                    <div class="content-header-button__text">Delete</div>
+                    <div class="content-header-button__invisible"></div>
+                </button>`
+        }
+
+        const imageSrc = project.pictureData ?? "/public/assets/misc/default_project.png";
+
+        const userImage = project.user.pictureData ?? "/public/assets/misc/default_user.jpg";
+
+        let tags = "";
+        for (let i = 0; i < project.tags.length; i++) {
+            tags += `<li>${project.tags[i].name}</li>`
+        }
+
+        return `<div class="project__content">
+            <div class="content__header">
+                <div class="content-header__metainformation">
+                    <img src="${imageSrc}" alt="project_avatar" class="content-header__picture">
+                    <div class="content-header__name">${project.name}</div>
+                </div>
+                <div class="content-header__buttons">${buttonsHTML}</div>
+            </div>
+            <div class="content__line line"></div>
+            <div class="content__stack">
+                <ul class="stack__tools-used">${tags}</ul>
+            </div>
+            <div class="content__line line"></div>
+            <div class="content__main">
+                <div class="main__description">${project.description}</div>
+            </div>
+            <div class="content__line line"></div>
+            <div class="content__collaborators">
+                <table class="content-collaborators__table">
+                    <thead class="content-collaborators-table__header">
+                    <tr>
+                        <th>Avatar</th>
+                        <th>Nickname</th>
+                        <th>Role</th>
+                    </tr>
+                    </thead>
+                    <tbody class="content-collaborators-table__body">
+                    <tr>
+                        <td>
+                            <img src="${userImage}" alt="user_avatar" class="collaborator__image">
+                        </td>
+                        <td>
+                            <div class="collaborator__nickname">${project.user.nickname}</div>
+                        </td>
+                        <td>Author</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>`
+    };
+
+    const params = new Proxy(new URLSearchParams(window.location.search), {
+        get: (searchParams, prop) => searchParams.get(prop),
+    });
+
+    const projectId = Number(params.id);
+
+    const addNewTopicWithComment = () => {
+        Swal.fire({
+            title: 'Start new topic and add first comment',
+            html:
+                '<input id="swal-input1" class="swal2-input" placeholder="Topic Name">' +
+                '<textarea id="swal-input2" class="swal2-textarea" placeholder="Comment Text">',
+            focusConfirm: false,
+            showCancelButton: true,
+            heightAuto: false,
+            preConfirm: () => {
+                return [
+                    document.getElementById('swal-input1').value,
+                    document.getElementById('swal-input2').value
+                ];
+            },
+            allowOutsideClick: () => !Swal.isLoading()
+        }).then((result) => {
+            axios.post(`/topics`, {
+                "name": result.value[0],
+                "projectId": projectId
+            }).then((r) => {
+                const newTopicId = r.data.id;
+                axios.post(`/comments`, {
+                    "text": result.value[1],
+                    "topicId": newTopicId
+                }).then(() => {
+                    window.location = `/discussion?id=${newTopicId}`;
+                })
+            })
+        })
+    }
+
+    function deleteProject() {
+        axios.delete(`/projects/${projectId}`);
+        window.location = "/projects-page"
+    }
+
+    function editProject() {
+        window.location = "/edit-project?id=" + projectId;
+    }
+
+    axios.get('/current-auth').then((u) => {
+        axios.get(`/projects/${projectId}`).then(r => {
+            projectForm.innerHTML = createProjectFormHTML(r.data, u.data.nickname);
+        })
+    })
+</script>

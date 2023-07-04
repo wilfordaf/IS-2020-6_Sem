@@ -1,0 +1,50 @@
+<link rel="stylesheet" href="public/styles/discussions.css">
+<main class="content">
+    <div class="content__body">
+        <table class="content__table">
+            <thead class="table__header">
+            <tr>
+                <th>Topic</th>
+                <th>Project</th>
+                <th>Participants</th>
+                <th>Replies</th>
+                <th>Last Activity</th>
+            </tr>
+            </thead>
+            <tbody class="table__body" id="discussions_table"></tbody>
+        </table>
+    </div>
+</main>
+<script>
+    const tableBody = document.getElementById("discussions_table");
+
+    const createTopicHTML = (topic) => {
+        const date = new Date(topic.date).toLocaleDateString("ru-RU", {
+            month: "numeric",
+            day: "numeric"
+        });
+
+        let images = "";
+        for (let i = 0; i < topic.comments.length && i < 3; i++) {
+            if (topic.comments[i].user.pictureData === null) {
+                images += `<img src="/public/assets/misc/default_user.jpg" class="table__user-icon" alt="user_avatar">`
+                continue;
+            }
+
+            images += `<img src="${topic.comments[i].user.pictureData}" class="table__user-icon" alt="user_avatar">`
+        }
+        return `<tr>
+                <td><a href="/discussion?id=${topic.id}">${topic.name}</a></td>
+                <td><a href=${topic.project.repositoryLink}>${topic.project.name}</a></td>
+                <td>${images}</td>
+                <td>${topic.comments.length}</td>
+                <td>${date}</td>
+            </tr>`;
+    };
+
+    axios.get('/topics').then(r => {
+        r.data.forEach(t => {
+            tableBody.insertAdjacentHTML("afterbegin", createTopicHTML(t));
+        })
+    })
+</script>

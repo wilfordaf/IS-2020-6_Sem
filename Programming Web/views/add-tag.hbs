@@ -1,0 +1,63 @@
+<link rel="stylesheet" href="public/styles/addtag.css">
+<main class="content">
+    <div class="content__body">
+        <div class="content__ask">
+            <form class="tag-form">
+                <div class="tag-list" id="tag_list">
+                </div>
+                <div class="tag-buttons">
+                    <div class="tag-add">
+                        <button type="button" class="tag-add-btn" onclick="addNewTag()">Add Tag</button>
+                    </div>
+                    <div class="tag-submit">
+                        <button type="button" class="tag-next-btn" onclick="redirectToAddProject()">Next</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+<script>
+    const tagListBody = document.getElementById("tag_list");
+    const addNewTag = () => {
+        Swal.fire({
+            title: 'Submit your tag',
+            input: 'text',
+            inputAttributes: {
+                autocapitalize: 'off'
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Add',
+            heightAuto: false,
+            allowOutsideClick: () => !Swal.isLoading()
+        }).then((result) => {
+            axios.post(`/projectTags`, {
+                "tagName": result.value,
+            }).then(() => {
+                window.location.reload();
+            })
+        })
+    }
+
+    const createTagHTML = (tag) => {
+        return `<label class="tag">
+                        <span class="tag-text">${tag.name}</span>
+                        <input type="checkbox" name="${tag.name}" value="${tag.id}" class="tag_checkbox">
+                    </label>`;
+    };
+
+    axios.get('/projectTags').then(r => {
+        r.data.forEach(t => {
+            tagListBody.insertAdjacentHTML("afterbegin", createTagHTML(t));
+        })
+    })
+
+    function redirectToAddProject() {
+        const tagIds = Array.from(document.querySelectorAll(".tag_checkbox"))
+            .filter(c => c.checked)
+            .map(c => c.value);
+
+        const encodedTagIds = encodeURIComponent(JSON.stringify(tagIds));
+        window.location.href = "/add-project?tagIds=" + encodedTagIds;
+    }
+</script>

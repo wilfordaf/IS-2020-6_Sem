@@ -1,0 +1,120 @@
+.profile {
+    flex: 1 1 auto;
+}
+
+.profile__body {
+    max-width: 1200px;
+    margin: 80px auto;
+    border: solid 1px rgb(128, 128, 128);
+}
+
+.line {
+    border-top: 1px solid #ccc;
+}
+
+.content__header {
+    display: flex;
+    justify-content: space-between;
+    margin: 0px 20px 15px;
+    align-items: center;
+}
+
+.content-header__metainformation {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.content-header__picture {
+    width: 200px;
+    height: 200px;
+    margin: 10px 0px;
+}
+
+.content-header__name {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+  
+.content-header__publication-time {
+    font-size: 14px;
+    font-style: italic;
+    color: #999;
+}
+  
+.content-header__buttons {
+    display: flex;
+    flex-direction: column;
+}
+
+.content-header__button {
+    display: grid;
+    grid-template-columns: 20% 60% 20%;
+    border: 1px solid black;
+    background-color: #f5f5f5;
+    border-radius: 12px;
+    padding: 5px;
+    margin: 0px 0px 10px;
+    width: 170px;
+    align-items: center;
+}
+
+.content-header-button__picture {
+    height: 20px;
+    width: 20px;
+    margin: 0px 10px 0px 5px;
+}
+
+.content-header-button__text {
+    font-size: 16px;
+}
+
+.content__main {
+    margin: 15px 20px;
+}
+
+.content__projects {
+    margin: 20px;
+}
+  
+.content-projects__table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+}
+
+.content-projects-table__header {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.content-projects-table__header th,
+.content-projects-table__body td {
+    padding: 10px;
+    text-align: left;
+}
+
+.content-projects-table__header th:first-child,
+.content-projects-table__body td:first-child,
+.content-projects-table__header th:nth-child(2),
+.content-projects-table__body td:nth-child(2) {
+    width: 75px;
+    text-align: center;
+}
+
+.content-projects-table__body tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.collaborator__nickname {
+    font-weight: bold;
+    color: #333;
+}
+
+.collaborator__image {
+    max-width: 50px;
+    border-radius: 15px;
+    margin: 0px auto;
+}

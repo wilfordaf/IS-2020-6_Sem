@@ -1,0 +1,63 @@
+<link rel="stylesheet" href="public/styles/addproject.css">
+<main class="content">
+    <div class="content__body">
+        <div class="content__ask">
+            <div class="content-ask__header">Please read the <a href="/rules">rules</a> before saving the
+                profile!</div>
+            <form class="content-ask__form form" onsubmit="addProject()">
+                <ul class="form__field-list">
+                    <li>
+                        <label>
+                            <input type="text" class="form__input-text" name="Firstname"
+                                   placeholder="Firstname" required id="firstname"/>
+                        </label>
+                    </li>
+                    <li>
+                        <label>
+                            <input type="text" class="form__input-text" name="Lastname"
+                                   placeholder="Lastname" required id="lastname"/>
+                        </label>
+                    </li>
+                    <li>
+                        <label for="profile-picture" class="form__label">Profile Picture:</label>
+                        <input type="file" id="profile-picture" name="Profile Picture" accept="image/*" />
+                    </li>
+                </ul>
+            </form>
+            <button class="content-ask__button" onclick="saveProfile()">Save</button>
+        </div>
+    </div>
+</main>
+<script>
+    const toBase64 = file => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+    });
+
+    async function saveProfile() {
+        const firstname = document.getElementById("firstname").value;
+        const lastname = document.getElementById("lastname").value;
+        const image = document.getElementById("profile-picture").value;
+        let imageBase64 = null
+        if (image) {
+            const file = document.getElementById('profile-picture').files[0];
+            imageBase64 = await toBase64(file)
+        }
+
+        const params = new Proxy(new URLSearchParams(window.location.search), {
+            get: (searchParams, prop) => searchParams.get(prop),
+        });
+
+        const userId = Number(params.id);
+        axios.patch(`/users`, {
+            "id": userId,
+            "firstname": firstname,
+            "lastname": lastname,
+            "pictureData": imageBase64
+        }).then((r) => {
+            window.location = `/profile?id=${r.data.id}`;
+        })
+    }
+</script>

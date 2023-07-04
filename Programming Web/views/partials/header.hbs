@@ -1,0 +1,40 @@
+<link rel="stylesheet" href="public/styles/header.css">
+<header class="header">
+    <div class="header__body">
+        <div class="header__invisible-column"></div>
+        <nav class="header-navbar">
+            <ul class="header-navbar-menu">
+                {{>header-menu-item href="projects-page" title="Projects"}}
+                {{>header-menu-item href="discussions" title="Discussions"}}
+                {{>header-menu-item href="rules" title="Rules"}}
+                {{>header-menu-item href="author" title="About"}}
+            </ul>
+        </nav>
+        <div class="header__authorization">
+            <div class="authorization__buttons" id="authorization_buttons">
+                <button class="authorization__button" onclick="window.location.replace('/login')">
+                    <img src="public/assets/misc/login.png" alt="person" class="button__image">
+                    <div class="button__text">Log In</div>
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
+<script>
+    const authorization = document.getElementById("authorization_buttons");
+    axios.get('/is-authorized').then((r) => {
+        if (r.data.isAuthorized) {
+            axios.get('/current-auth').then((u) => {
+                authorization.innerHTML = `<button class="authorization__button" onclick="window.location.replace('/profile?id=${u.data.id}')">
+                        <img src="public/assets/misc/login.png" alt="person" class="button__image">
+                        <div class="button__text">Profile</div>
+                    </button>
+    <button class="authorization__button" onclick="window.location.replace('/logout')">
+                        <img src="public/assets/misc/logout.png" alt="logout" class="button__image">
+                        <div class="button__text">Logout</div>
+                    </button>`
+            })
+        }
+    })
+</script>
+<script src="/public/scripts/highlightMenuItem.js"></script>

@@ -1,0 +1,91 @@
+.content {
+    flex: 1 1 auto;
+}
+
+.content__body {
+    max-width: 1500px;
+    margin: 80px auto;
+}
+
+.content__ask {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.tag-form {
+    border: 2px solid black;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.tag-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.tag {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.tag-text {
+    margin-left: 10px;
+    font-size: 20px;
+}
+
+.tag input[type="checkbox"] {
+    transform: scale(2);
+    margin-right: 10px;
+}
+
+.tag-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.tag-buttons {
+    display: flex;
+    flex-direction: row;
+}
+
+.tag-add-btn,
+.tag-next-btn {
+    margin: 10px 5px 0px;
+    border: 2px solid black;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.tag-add-btn:hover,
+.tag-next-btn:hover {
+    background-color: rgb(128, 128, 128);
+    color: white;
+}
+
+.tag-add-btn:active,
+.tag-next-btn:active {
+    transform: translateY(2px);
+}
+
+@media screen and (max-width: 600px) {
+    .tag-form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .tag-add-btn, .tag-next-btn {
+        width: 100%;
+        margin-top: 10px;
+    }
+}

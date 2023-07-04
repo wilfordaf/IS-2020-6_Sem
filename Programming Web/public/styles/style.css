@@ -1,0 +1,10 @@
+body {
+    font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+}
+
+.wrapper {
+    min-height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}

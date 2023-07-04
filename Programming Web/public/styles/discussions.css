@@ -1,0 +1,111 @@
+.content {
+    flex: 1 1 auto;
+}
+
+.content__body {
+    display: flex;
+    max-width: 1500px;
+    margin: 80px auto;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.content__header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 10px 0px 20px;
+}
+
+.form__input-text {
+    padding: 8px 16px;
+    font-size: 16px;
+    width: 350px;
+    border: 1px solid rgb(237, 237, 237);
+    transition: 0.3s ease;
+}
+
+.form__input-text:focus {
+    transition: 0.3s ease;
+    border: 1px solid rgba(0, 255, 0, 0.3);
+}
+
+.content__buttons {
+    display: flex;
+    flex-direction: row;
+    list-style: none;
+}
+
+.button {
+    font-size: 20px;
+    margin: 0px 15px;
+    padding: 7px 10px;
+    background-color: rgb(237, 237, 237);
+    border: 1px solid;
+    border-style: hidden;
+    transition: ease 0.3s;
+    max-width: fit-content;
+}
+
+.button li:hover {
+    color: darkgreen;
+    background-color: rgba(0, 255, 0, 0.2);
+    transition: ease 0.3s;
+}
+
+.button:active {
+    background-color: rgba(0, 255, 0, 0.4);
+    transition: ease 0.3s;
+}
+
+.content__table {
+    border-collapse: collapse;
+    width: fit-content;
+}
+
+.table__body a {
+    color: black;
+    transition: color ease 0.2s;
+}
+
+.table__body a:hover {
+    color: rgb(128, 128, 128);
+}
+
+.table__user-icon {
+    height: 30px;
+    width: 30px;
+    border-radius: 15px;
+    display: none;
+}
+
+.table__user-icon:nth-last-child(-n + 3) {
+    display: inline-block;
+}
+
+.content__table th,
+.content__table td {
+    text-align: center;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    width: 180px;
+    font-size: 18px;
+}
+
+.content__table th:first-child,
+.content__table td:first-child {
+    text-align: left;
+    width: 600px;
+}
+
+.content__table th {
+    font-weight: bold;
+}
+
+.content__table tr:hover {
+    background-color: #ddd;
+}
+
+.content__table td:last-child {
+    font-style: italic;
+}

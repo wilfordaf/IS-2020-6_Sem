@@ -1,0 +1,142 @@
+<link rel="stylesheet" href="public/styles/discussiontemplate.css">
+<link rel="stylesheet" href="public/styles/prism.css">
+<main class="content">
+    <div class="content__body">
+        <div class="content__discussion-header">Adding notifications in Telegram about new items</div>
+        <ul class="content__messages" id="comment_list">
+            <div class="content__line line"></div>
+        </ul>
+        <div class="content__arrows" id="arrows">
+        </div>
+    </div>
+</main>
+<script src="/public/scripts/prism.js"></script>
+<script>
+    let userNickname;
+    const commentListBody = document.getElementById("comment_list");
+    const addNewComment = () => {
+        Swal.fire({
+            title: 'Submit your comment',
+            input: 'textarea',
+            inputAttributes: {
+                autocapitalize: 'off'
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Send',
+            heightAuto: false,
+            allowOutsideClick: () => !Swal.isLoading()
+        }).then((result) => {
+            console.log(result.value);
+            axios.post(`/comments`, {
+                "text": result.value,
+                "topicId": topicId
+            }).then(() => {
+                window.location.reload();
+            })
+        })
+    }
+
+    const createCommentHTML = (comment) => {
+        const date = new Date(comment.date).toLocaleDateString("ru-RU", {
+            month: "numeric",
+            day: "numeric"
+        });
+
+        let reputationValue = 0;
+        let userAssessment = null;
+        comment.assessments?.forEach(a => {
+            if (a.user.nickname === userNickname) {
+                userAssessment = a.type;
+            }
+
+            if (a.type === 1) {
+                reputationValue++;
+            }
+            else {
+                reputationValue--;
+            }
+        })
+
+        const assessmentHTML = `<button value="${comment.id}" class="reputation__button-up" style="border-bottom-color: ${userAssessment === 1 ? "green" : "rga(128, 128, 128)"}" onclick="vote(this.value, 1)"></button>
+                        <div class="reputation__value">${reputationValue}</div>
+                        <button value="${comment.id}" class="reputation__button-down" style="border-bottom-color: ${userAssessment === 2 ? "red" : "rga(128, 128, 128)"}" onclick="vote(this.value, 2)"></button>`;
+        const splitText = comment.text.split("```");
+        const text = splitText[0];
+        let code = null;
+        if (splitText.length > 1) {
+            code = splitText[1];
+        }
+
+        const imageSrc = comment.user.pictureData ?? "/public/assets/misc/default_user.jpg"
+
+        const codeHTML = code ?  `<div class="message__code">
+                                <pre><code class="language-javascript">${code}</code></pre>
+                        </div>` : ""
+
+        return `<li class="messages__message message">
+                <div class="message__menu">
+                    <div class="message__reputation reputation">
+                        ${assessmentHTML}
+                    </div>
+                    <button class="reply__button" onclick="addNewComment()">
+                        <img src="public/assets/misc/reply.png" alt="reply" class="reply-button__image">
+                    </button>
+                </div>
+                <div class="message__data">
+                    <div class="message__metainformation">
+                        <div class="metainformation__user">
+                            <img src="${imageSrc}" alt="1"
+                                 class="metainformation-user__avatar">
+                            <div class="metainformation-user__nickname">${comment.user.nickname}</div>
+                        </div>
+                        <div class="metainformation__message">
+                            <div class="metainformation-message__date">${date}</div>
+                            <div class="metainformation-message__number"></div>
+                        </div>
+                    </div>
+                    <div class="message__content">
+                        <div class="message__text">${text}</div>
+                        ${codeHTML}
+                    </div>
+                </div>
+            </li>
+            <div class="content__line line"></div>`
+    };
+
+    function vote(commentId, vote) {
+        axios.get(`/comments/${commentId}`).then((r) => {
+            const userAssessment = r.data.assessments.find(a => a.user.nickname === userNickname);
+            if (userAssessment) {
+                axios.delete(`/assessments/${userAssessment.id}`)
+            }
+
+            axios.post('/assessments', {
+                "type": vote,
+                "commentId": commentId
+            }).then(() => {
+                window.location.reload();
+            })
+        })
+    }
+
+    const params = new Proxy(new URLSearchParams(window.location.search), {
+        get: (searchParams, prop) => searchParams.get(prop),
+    });
+
+    const arrows = document.getElementById("arrows");
+    const topicId = Number(params.id);
+    const pageId = Number(params.pageId ?? 1)
+    axios.get('/current-auth').then((u) => {
+        userNickname = u.data.nickname;
+        axios.get(`/comments/topic/${topicId}?page=${pageId}&limit=3`).then(r => {
+            r.data.comments?.forEach(c => {
+                commentListBody.insertAdjacentHTML("beforeend", createCommentHTML(c));
+            })
+            const totalPages = r.data.totalPages;
+            arrows.innerHTML = `
+    <a href="/discussion?id=${topicId}&pageId=${pageId - 1}" class="arrow arrow--left" style="visibility:${pageId === 1 ? "hidden" : "visible"}">←</a>
+    <a href="/discussion?id=${topicId}&pageId=${pageId + 1}" class="arrow arrow--right" style="visibility:${pageId === totalPages ? "hidden" : "visible"}">→</a>`
+            Prism.highlightAll();
+        })
+    })
+</script>

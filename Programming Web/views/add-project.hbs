@@ -1,0 +1,74 @@
+<link rel="stylesheet" href="public/styles/addproject.css">
+<main class="content">
+    <div class="content__body">
+        <div class="content__ask">
+            <div class="content-ask__header">Please read the <a href="/rules">rules</a> before submitting a
+                project!</div>
+            <form class="content-ask__form form" onsubmit="addProject()">
+                <ul class="form__field-list">
+                    <li>
+                        <label>
+                            <input type="text" class="form__input-text" name="Name" placeholder="Name" required id="name"/>
+                        </label>
+                    </li>
+                    <li>
+                        <label>
+                            <input type="text" class="form__input-text" name="Git Repository Link"
+                                   placeholder="Git Repository Link" required id="git"/>
+                        </label>
+                    </li>
+                    <li>
+                        <label>
+                            <input type="text" class="form__input-text" name="Description" placeholder="Description"
+                                   required id="description"/>
+                        </label>
+                    </li>
+                    <li>
+                        <label for="project-picture" class="form__label">Project Picture:</label>
+                        <input type="file" id="project-picture" name="Project Picture" accept="image/*" />
+                    </li>
+                </ul>
+            </form>
+            <button class="content-ask__button" onclick="addProject()">Publish</button>
+        </div>
+    </div>
+</main>
+<script>
+    const toBase64 = file => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+    });
+
+    async function addProject() {
+        const name = document.getElementById("name").value;
+        const git = document.getElementById("git").value;
+        const description = document.getElementById("description").value;
+        const image = document.getElementById("project-picture").value;
+        let imageBase64 = null
+        if (image) {
+            const file = document.getElementById('project-picture').files[0];
+            imageBase64 = await toBase64(file)
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const encodedTagIds = urlParams.get("tagIds");
+        const tagIds = JSON.parse(decodeURIComponent(encodedTagIds));
+
+        const socket = io();
+        axios.post(`/projects`, {
+            "name": name,
+            "description": description,
+            "pictureData": imageBase64,
+            "repositoryLink": git,
+            "tagIds": tagIds
+        }).then((r) => {
+            socket.emit('createProjectMessage', {
+                "projectName": name
+            });
+
+            window.location = `/project?id=${r.data.id}`;
+        })
+    }
+</script>
