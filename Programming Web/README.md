@@ -7,4 +7,4 @@
 <h5>Юрпалов Сергей М33051</h5>
 
 ## Диаграмма классов приложения:
-![class_diagram](/class_diagram.png)
+![class_diagram](class_diagram.png)
